@@ -24,7 +24,12 @@ Timer.propTypes = {
   time: PropTypes.number.isRequired,
 }
 
-const state = [
+const mergeState = (newState) => (oldState) => ({
+  ...oldState,
+  ...newState
+})
+
+const initialState = [
   'timer',
   'setTimer',
   ({ time }) => ({ remaining: time, timeoutPID: null }),
@@ -33,16 +38,16 @@ const state = [
 const startTimer = ({ time, setTimer }) => (t) => {
   const start = (t) => {
     if (t < T(1).seconds) {
-      setTimer((oldState) => ({ ...oldState, remaining: time, timeoutPID: false }))
+      setTimer(mergeState({ remaining: time, timeoutPID: false }))
       return false
     }
     const remaining = t - T(1).seconds
     const timeoutFn = () => {
-      setTimer((oldState) => ({ ...oldState, remaining }))
+      setTimer(mergeState({ remaining }))
       start(remaining)
     }
     const timeoutPID = setTimeout(timeoutFn, T(1).seconds)
-    setTimer((oldState) => ({ ...oldState, timeoutPID }))
+    setTimer(mergeState({ timeoutPID }))
     return timeoutPID
   }
   return start.bind(null, t)
@@ -50,15 +55,15 @@ const startTimer = ({ time, setTimer }) => (t) => {
 
 const pauseTimer = ({ timer, setTimer }) => () => {
   clearTimeout(timer.timeoutPID)
-  setTimer((oldState) => ({ ...oldState, timeoutPID: null }))
+  setTimer(mergeState({ timeoutPID: null }))
 }
 
 const stopTimer = ({ time, timer, setTimer }) => () => {
   clearTimeout(timer.timeoutPID)
-  setTimer((oldState) => ({ ...oldState, remaining: time, timeoutPID: null }))
+  setTimer(mergeState({ remaining: time, timeoutPID: null }))
 }
 
 export default compose(
-  withState(...state),
+  withState(...initialState),
   withHandlers({ startTimer, pauseTimer, stopTimer }),
 )(Timer)
