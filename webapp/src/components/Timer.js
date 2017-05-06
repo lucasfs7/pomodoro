@@ -1,11 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { compose, withState, withHandlers } from 'recompose'
-import T from 'utils/time'
+import { time as T, fullTime } from 'utils/time'
 
 const Timer = ({ timer, startTimer, pauseTimer, stopTimer }) => (
   <div className='Timer'>
-    <h1>{ timer.remaining / 1000 }</h1>
+    <h1>{ fullTime(timer.remaining) }</h1>
     <button
       onClick={ startTimer(timer.remaining) }
       disabled={ !!timer.timeoutPID }>
