@@ -5,13 +5,13 @@ import Timer from 'components/Timer'
 import Task from 'components/Task'
 import './App.css'
 
-const App = ({ config, stepTo, changeTaskText }) => (
+const App = ({ cicle, stepTo, changeTaskText }) => (
   <div className='App'>
     <Timer
-      time={ config.steps[config.currentStep].time }
-      onFinish={ stepTo(config.currentStep + 1) } />
+      time={ cicle.steps[cicle.currentStep].time }
+      onFinish={ stepTo(cicle.currentStep + 1) } />
     <h2>Tasks</h2>
-    { config.steps.map((step, index) => (
+    { cicle.steps.map((step, index) => (
       <div key={ index }>
         { !step.pause &&
           <Task
@@ -34,8 +34,8 @@ const shortPause = { time: T(5).minutes, done: false, pause: true }
 const longPause = { time: T(15).minutes, done: false, pause: true }
 
 const initialState = [
-  'config',
-  'setConfig',
+  'cicle',
+  'setCicle',
   {
     currentStep: 0,
     steps: [
@@ -51,10 +51,10 @@ const initialState = [
   },
 ]
 
-const stepTo = ({ config, setConfig }) => (nextStep) => () => {
-  setConfig(mergeState({
+const stepTo = ({ cicle, setCicle }) => (nextStep) => () => {
+  setCicle(mergeState({
     currentStep: nextStep,
-    steps: [ ...config.steps.map((step, index) =>
+    steps: [ ...cicle.steps.map((step, index) =>
       index === (nextStep - 1)
       ? { ...step, done: true }
       : step
@@ -62,10 +62,10 @@ const stepTo = ({ config, setConfig }) => (nextStep) => () => {
   }))
 }
 
-const changeTaskText = ({ config, setConfig }) => (selectedStep) => (text) => {
-  setConfig(mergeState({
+const changeTaskText = ({ cicle, setCicle }) => (selectedStep) => (text) => {
+  setCicle(mergeState({
     steps: [
-      ...config.steps.map((step, index) =>
+      ...cicle.steps.map((step, index) =>
         index === selectedStep
         ? { ...step, task: text }
         : step)
