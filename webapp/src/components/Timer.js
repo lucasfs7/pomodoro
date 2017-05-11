@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { compose, withState, withHandlers } from 'recompose'
+import { compose, withState, withHandlers, lifecycle } from 'recompose'
 import { time as T, fullTime } from 'utils/time'
 
 const Timer = ({ timer, startTimer, pauseTimer, stopTimer }) => (
@@ -22,6 +22,7 @@ const Timer = ({ timer, startTimer, pauseTimer, stopTimer }) => (
 
 Timer.propTypes = {
   time: PropTypes.number.isRequired,
+  onFinish: PropTypes.func,
 }
 
 const mergeState = (newState) => (oldState) => ({
@@ -35,10 +36,19 @@ const initialState = [
   ({ time }) => ({ remaining: time, timeoutPID: null }),
 ]
 
-const startTimer = ({ time, setTimer }) => (t) => {
+const lifecycleMethods = {
+  componentWillReceiveProps({ time, timer, setTimer }) {
+    if (time !== this.props.time) {
+      setTimer(mergeState({ ...timer, remaining: time }))
+    }
+  },
+}
+
+const startTimer = ({ time, setTimer, onFinish }) => (t) => {
   const start = (t) => {
     if (t < T(1).seconds) {
       setTimer(mergeState({ remaining: time, timeoutPID: false }))
+      if (onFinish) onFinish()
       return false
     }
     const remaining = t - T(1).seconds
@@ -66,4 +76,5 @@ const stopTimer = ({ time, timer, setTimer }) => () => {
 export default compose(
   withState(...initialState),
   withHandlers({ startTimer, pauseTimer, stopTimer }),
+  lifecycle(lifecycleMethods),
 )(Timer)
