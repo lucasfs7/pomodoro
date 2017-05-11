@@ -1,6 +1,7 @@
 import React from 'react'
 import { compose, withState, withHandlers } from 'recompose'
 import { time as T } from 'utils/time'
+import { mergeState } from 'utils/state'
 import Timer from 'components/Timer'
 import Task from 'components/Task'
 import './App.css'
@@ -23,11 +24,6 @@ const App = ({ cicle, stepTo, changeTaskText }) => (
     )) }
   </div>
 )
-
-const mergeState = (newState) => (oldState) => ({
-  ...oldState,
-  ...newState
-})
 
 const pomodoro = { time: T(25).minutes, done: false }
 const shortPause = { time: T(5).minutes, done: false, pause: true }

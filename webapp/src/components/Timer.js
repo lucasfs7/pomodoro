@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { compose, withState, withHandlers, lifecycle } from 'recompose'
 import { time as T, fullTime } from 'utils/time'
+import { mergeState } from 'utils/state'
 
 const Timer = ({ timer, startTimer, pauseTimer, stopTimer }) => (
   <div className='Timer'>
@@ -24,11 +25,6 @@ Timer.propTypes = {
   time: PropTypes.number.isRequired,
   onFinish: PropTypes.func,
 }
-
-const mergeState = (newState) => (oldState) => ({
-  ...oldState,
-  ...newState
-})
 
 const initialState = [
   'timer',
