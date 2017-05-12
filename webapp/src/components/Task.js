@@ -2,12 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { compose, withHandlers } from 'recompose'
 
-const Task = ({
-  done = false,
-  text = '',
-  autoFocus = false,
-  handleTextChange,
-}) => (
+const Task = ({ done, text, autoFocus, handleTextChange }) => (
   <div>
     <input
       autoFocus={ autoFocus }
@@ -18,6 +13,9 @@ const Task = ({
 )
 
 Task.defaultProps = {
+  autoFocus: false,
+  done: false,
+  text: '',
   onTextChange: (e) => e,
 }
 
