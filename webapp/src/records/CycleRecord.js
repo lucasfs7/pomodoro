@@ -4,7 +4,7 @@ import TaskRecord from 'records/TaskRecord'
 import ShortPauseRecord from 'records/ShortPauseRecord'
 import LongPauseRecord from 'records/LongPauseRecord'
 
-const CicleRecord = Record({
+const CycleRecord = Record({
   id: null,
   currentStep: 0,
   steps: List(),
@@ -13,7 +13,7 @@ const CicleRecord = Record({
 export default (
   props,
   { task, shortPause, longPause } = {},
-) => new CicleRecord({
+) => new CycleRecord({
   ...props,
   id: uuid(),
   steps: List([

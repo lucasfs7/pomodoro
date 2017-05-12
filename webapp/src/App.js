@@ -1,17 +1,17 @@
 import React from 'react'
 import { compose, withState, withHandlers } from 'recompose'
-import CicleRecord from 'records/CicleRecord'
+import CycleRecord from 'records/CycleRecord'
 import Timer from 'components/Timer'
 import Task from 'components/Task'
 import './App.css'
 
-const App = ({ cicle, stepTo, changeTaskText }) => (
+const App = ({ cycle, stepTo, changeTaskText }) => (
   <div className='App'>
     <Timer
-      time={ cicle.steps.get(cicle.currentStep).time }
-      onFinish={ stepTo(cicle.currentStep + 1) } />
+      time={ cycle.steps.get(cycle.currentStep).time }
+      onFinish={ stepTo(cycle.currentStep + 1) } />
     <h2>Tasks</h2>
-    { cicle.steps.map((step, index) => (
+    { cycle.steps.map((step, index) => (
       <div key={ index }>
         { !step.pause &&
           <Task
@@ -25,32 +25,32 @@ const App = ({ cicle, stepTo, changeTaskText }) => (
 )
 
 const initialState = [
-  'cicle',
-  'setCicle',
-  CicleRecord(),
+  'cycle',
+  'setCycle',
+  CycleRecord(),
 ]
 
-const stepTo = ({ cicle, setCicle }) => (nextStep) => () => {
-  const updatedCicle = cicle.merge({
+const stepTo = ({ cycle, setCycle }) => (nextStep) => () => {
+  const updatedCycle = cycle.merge({
     currentStep: nextStep,
-    steps: cicle.steps.map((step, index) =>
+    steps: cycle.steps.map((step, index) =>
       index === (nextStep - 1)
       ? step.merge({ done: true })
       : step
     )
   })
-  setCicle(updatedCicle)
+  setCycle(updatedCycle)
 }
 
-const changeTaskText = ({ cicle, setCicle }) => (id) => (text) => {
-  const updatedCicle = cicle.merge({
-    steps: cicle.steps.map((step, index) =>
+const changeTaskText = ({ cycle, setCycle }) => (id) => (text) => {
+  const updatedCycle = cycle.merge({
+    steps: cycle.steps.map((step, index) =>
       step.id === id
       ? step.merge({ task: text })
       : step
     )
   })
-  setCicle(updatedCicle)
+  setCycle(updatedCycle)
 }
 
 export default compose(
