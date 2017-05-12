@@ -11,15 +11,15 @@ const App = ({ cycle, stepTo, changeTaskText }) => (
       time={ cycle.steps.get(cycle.currentStep).time }
       onFinish={ stepTo(cycle.currentStep + 1) } />
     <h2>Tasks</h2>
-    { cycle.steps.map((step, index) => (
-      <div key={ index }>
-        { !step.pause &&
+    { cycle
+        .steps
+        .filter((step) => !step.pause)
+        .map((step, index) => (
           <Task
+            key={ index }
             done={ step.done }
             text={ step.task }
             onTextChange={ changeTaskText(step.id) } />
-        }
-      </div>
     )) }
   </div>
 )
