@@ -1,7 +1,6 @@
 import React from 'react'
 import { compose, withState, withHandlers } from 'recompose'
-import { time as T } from 'utils/time'
-import { mergeState } from 'utils/state'
+import CicleRecord from 'records/CicleRecord'
 import Timer from 'components/Timer'
 import Task from 'components/Task'
 import './App.css'
@@ -9,7 +8,7 @@ import './App.css'
 const App = ({ cicle, stepTo, changeTaskText }) => (
   <div className='App'>
     <Timer
-      time={ cicle.steps[cicle.currentStep].time }
+      time={ cicle.steps.get(cicle.currentStep).time }
       onFinish={ stepTo(cicle.currentStep + 1) } />
     <h2>Tasks</h2>
     { cicle.steps.map((step, index) => (
@@ -18,55 +17,40 @@ const App = ({ cicle, stepTo, changeTaskText }) => (
           <Task
             done={ step.done }
             text={ step.task }
-            onTextChange={ changeTaskText(index) } />
+            onTextChange={ changeTaskText(step.id) } />
         }
       </div>
     )) }
   </div>
 )
 
-const pomodoro = { time: T(25).minutes, done: false }
-const shortPause = { time: T(5).minutes, done: false, pause: true }
-const longPause = { time: T(15).minutes, done: false, pause: true }
-
 const initialState = [
   'cicle',
   'setCicle',
-  {
-    currentStep: 0,
-    steps: [
-      { ...pomodoro },
-      { ...shortPause },
-      { ...pomodoro },
-      { ...shortPause },
-      { ...pomodoro },
-      { ...shortPause },
-      { ...pomodoro },
-      { ...longPause },
-    ],
-  },
+  CicleRecord(),
 ]
 
 const stepTo = ({ cicle, setCicle }) => (nextStep) => () => {
-  setCicle(mergeState({
+  const updatedCicle = cicle.merge({
     currentStep: nextStep,
-    steps: [ ...cicle.steps.map((step, index) =>
+    steps: cicle.steps.map((step, index) =>
       index === (nextStep - 1)
-      ? { ...step, done: true }
+      ? step.merge({ done: true })
       : step
-    ) ]
-  }))
+    )
+  })
+  setCicle(updatedCicle)
 }
 
-const changeTaskText = ({ cicle, setCicle }) => (selectedStep) => (text) => {
-  setCicle(mergeState({
-    steps: [
-      ...cicle.steps.map((step, index) =>
-        index === selectedStep
-        ? { ...step, task: text }
-        : step)
-    ],
-  }))
+const changeTaskText = ({ cicle, setCicle }) => (id) => (text) => {
+  const updatedCicle = cicle.merge({
+    steps: cicle.steps.map((step, index) =>
+      step.id === id
+      ? step.merge({ task: text })
+      : step
+    )
+  })
+  setCicle(updatedCicle)
 }
 
 export default compose(
