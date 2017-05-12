@@ -24,6 +24,7 @@ const App = ({ cycle, stepTo, changeTaskText }) => (
         .map((step, index) => (
           <Task
             key={ index }
+            autoFocus={ index === 0 }
             done={ step.done }
             text={ step.task }
             onTextChange={ changeTaskText(step.id) } />
