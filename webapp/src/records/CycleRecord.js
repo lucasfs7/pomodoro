@@ -1,6 +1,6 @@
 import { Record, List } from 'immutable'
 import uuid from 'uuid/v1'
-import TaskRecord from 'records/TaskRecord'
+import WorkRecord from 'records/WorkRecord'
 import ShortPauseRecord from 'records/ShortPauseRecord'
 import LongPauseRecord from 'records/LongPauseRecord'
 
@@ -12,18 +12,18 @@ const CycleRecord = Record({
 
 export default (
   props,
-  { task, shortPause, longPause } = {},
+  { work, shortPause, longPause } = {},
 ) => new CycleRecord({
   ...props,
   id: uuid(),
   steps: List([
-    TaskRecord(task),
+    WorkRecord(work),
     ShortPauseRecord(shortPause),
-    TaskRecord(task),
+    WorkRecord(work),
     ShortPauseRecord(shortPause),
-    TaskRecord(task),
+    WorkRecord(work),
     ShortPauseRecord(shortPause),
-    TaskRecord(task),
+    WorkRecord(work),
     LongPauseRecord(longPause),
   ]),
 })

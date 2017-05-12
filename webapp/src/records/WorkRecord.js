@@ -2,14 +2,14 @@ import { Record } from 'immutable'
 import uuid from 'uuid/v1'
 import { time as T } from 'utils/time'
 
-const TaskRecord = Record({
+const WorkRecord = Record({
   id: null,
   time: T(25).minutes,
   done: false,
   task: '',
-}, 'Task')
+}, 'Work')
 
-export default (props = {}) => new TaskRecord({
+export default (props = {}) => new WorkRecord({
   ...props,
   id: uuid(),
 })
