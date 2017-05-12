@@ -14,13 +14,21 @@ const App = ({ cycle, stepTo, changeTaskText }) => (
     { cycle
         .steps
         .filter((step) => !step.pause)
+        .sort((a, b) =>
+          (a.done && b.done) || (!a.done && !b.done)
+          ? 0
+          : a.done && !b.done
+            ? 1
+            : -1
+        )
         .map((step, index) => (
           <Task
             key={ index }
             done={ step.done }
             text={ step.task }
             onTextChange={ changeTaskText(step.id) } />
-    )) }
+        ))
+    }
   </div>
 )
 
