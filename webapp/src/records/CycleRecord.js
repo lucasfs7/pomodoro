@@ -8,6 +8,8 @@ const CycleRecord = Record({
   id: null,
   currentStep: 0,
   steps: List(),
+  task: '',
+  finished: false,
 })
 
 export default (

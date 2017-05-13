@@ -7,29 +7,14 @@ import './App.css'
 
 const App = ({ cycle, stepTo, changeTaskText }) => (
   <div className='App'>
+    <h2>What do you want to accomplish?</h2>
+    <Task
+      autoFocus
+      text={ cycle.task }
+      onTextChange={ changeTaskText } />
     <Timer
       time={ cycle.steps.get(cycle.currentStep).time }
       onFinish={ stepTo(cycle.currentStep + 1) } />
-    <h2>Tasks</h2>
-    { cycle
-        .steps
-        .filter((step) => !step.pause)
-        .sort((a, b) =>
-          (a.done && b.done) || (!a.done && !b.done)
-          ? 0
-          : a.done && !b.done
-            ? 1
-            : -1
-        )
-        .map((step, index) => (
-          <Task
-            key={ index }
-            autoFocus={ index === 0 }
-            done={ step.done }
-            text={ step.task }
-            onTextChange={ changeTaskText(step.id) } />
-        ))
-    }
   </div>
 )
 
@@ -51,18 +36,14 @@ const stepTo = ({ cycle, setCycle }) => (nextStep) => () => {
   setCycle(updatedCycle)
 }
 
-const changeTaskText = ({ cycle, setCycle }) => (id) => (text) => {
+const changeTaskText = ({ cycle, setCycle }) => (text) => {
   const updatedCycle = cycle.merge({
-    steps: cycle.steps.map((step, index) =>
-      step.id === id
-      ? step.merge({ task: text })
-      : step
-    )
+    task: text
   })
   setCycle(updatedCycle)
 }
 
 export default compose(
   withState(...initialState),
-  withHandlers({ stepTo, changeTaskText })
+  withHandlers({ stepTo, changeTaskText }),
 )(App)
