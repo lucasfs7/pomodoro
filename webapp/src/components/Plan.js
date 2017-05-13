@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { compose, withState, withHandlers } from 'recompose'
-import { Map, List } from 'immutable'
+import { Map } from 'immutable'
 import { PlanRecord } from 'records/PlanRecord'
 
 const Plan = ({ state, addTask, finishPlan, onTextChange }) => (
