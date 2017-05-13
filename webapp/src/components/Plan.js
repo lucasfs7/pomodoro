@@ -6,17 +6,23 @@ import { PlanRecord } from 'records/PlanRecord'
 
 const Plan = ({ state, addTask, finishPlan, onTextChange }) => (
   <div>
-    <h1>What do you want to accomplish today?</h1>
+    { state.get('plan').planned ? (
+      <h1>The plan...</h1>
+    ) : (
+      <h1>What do you want to accomplish today?</h1>
+    ) }
     { !state.get('plan').planned &&
       <div>
         <input
           autoFocus
+          spellCheck={ false }
           value={ state.get('text') }
           onChange={ onTextChange }
           type='text'
           placeholder='...'
           onKeyPress={ addTask } />
         <button
+          disabled={ state.get('plan').tasks.size === 0 }
           onClick={ finishPlan }>
           Ready to go?
         </button>
@@ -46,6 +52,7 @@ const initialState = [
 
 const addTask = ({ setState }) => (e) => {
   if (e.key !== 'Enter') return
+  if (!e.target.value) return
   const text = e.target.value
   setState((state) => state.merge({
     text: '',
@@ -56,6 +63,7 @@ const addTask = ({ setState }) => (e) => {
 }
 
 const finishPlan = ({ state, setState, onFinish }) => () => {
+  if (state.get('plan').tasks.size === 0) return
   const updatedPlan = state.get('plan').merge({ planned: true })
   setState((state) => state.merge({
     plan: updatedPlan,
