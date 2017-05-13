@@ -11,9 +11,13 @@ const App = ({ data, createCycles, stepTo, getCurrentStep, getCurrentCycle }) =>
   <div className='App'>
     { data.get('plan').planned &&
       data.get('cycles').size > 0 &&
+      !data.get('finished') &&
       <Timer
         time={ getCurrentStep().time }
         onFinish={ stepTo(getCurrentCycle().currentStep + 1) } />
+    }
+    { data.get('finished') &&
+      <h1>Congratulations, everything is done!</h1>
     }
     <Plan
       plan={ data.get('plan') }
@@ -28,6 +32,7 @@ const initialState = [
     plan: PlanRecord(),
     cycles: List(),
     currentCycle: null,
+    finished: false,
   }),
 ]
 
@@ -50,13 +55,19 @@ const getCurrentStep = (props) => () => {
   return currentCycle.steps.get(currentCycle.currentStep)
 }
 
-const stepTo = ({ data, setData }) => (nextStep) => () => {
+const stepTo = ({ setData }) => (nextStep) => () => {
   setData((data) => data.merge({
-    currentCycle:
-      nextStep > data.get('cycles').get(data.get('currentCycle')).steps.size
-      ? data.get('currentCycle') + 1
+    currentCycle: (
+      nextStep === data.get('cycles').get(data.get('currentCycle')).steps.size
+      ? (data.get('currentCycle') + 1) < data.get('cycles').size
+        ? data.get('currentCycle') + 1
+        : data.get('currentCycle')
       : data.get('currentCycle')
-    ,
+    ),
+    finished: (
+      nextStep === data.get('cycles').get(data.get('currentCycle')).steps.size &&
+      (data.get('currentCycle') + 1) === data.get('cycles').size
+    ),
     cycles: data.get('cycles').update(
       data.get('currentCycle'),
       (cycle) => cycle.merge({
