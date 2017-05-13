@@ -1,49 +1,76 @@
 import React from 'react'
 import { compose, withState, withHandlers } from 'recompose'
+import { Map, List } from 'immutable'
+import PlanRecord from 'records/PlanRecord'
 import CycleRecord from 'records/CycleRecord'
 import Timer from 'components/Timer'
-import Task from 'components/Task'
+import Plan from 'components/Plan'
 import './App.css'
 
-const App = ({ cycle, stepTo, changeTaskText }) => (
+const App = ({ data, createCycles, stepTo, getCurrentStep, getCurrentCycle }) => (
   <div className='App'>
-    <h2>What do you want to accomplish?</h2>
-    <Task
-      autoFocus
-      text={ cycle.task }
-      onTextChange={ changeTaskText } />
-    <Timer
-      time={ cycle.steps.get(cycle.currentStep).time }
-      onFinish={ stepTo(cycle.currentStep + 1) } />
+    { data.get('plan').planned &&
+      data.get('cycles').size > 0 &&
+      <Timer
+        time={ getCurrentStep().time }
+        onFinish={ stepTo(getCurrentCycle().currentStep + 1) } />
+    }
+    <Plan
+      plan={ data.get('plan') }
+      onFinish={ createCycles } />
   </div>
 )
 
 const initialState = [
-  'cycle',
-  'setCycle',
-  CycleRecord(),
+  'data',
+  'setData',
+  Map({
+    plan: PlanRecord(),
+    cycles: List(),
+    currentCycle: null,
+  }),
 ]
 
-const stepTo = ({ cycle, setCycle }) => (nextStep) => () => {
-  const updatedCycle = cycle.merge({
-    currentStep: nextStep,
-    steps: cycle.steps.map((step, index) =>
-      index === (nextStep - 1)
-      ? step.merge({ done: true })
-      : step
-    )
-  })
-  setCycle(updatedCycle)
+const createCycles = ({ setData }) => (newPlan) => {
+  setData((data) => data.merge({
+    plan: newPlan,
+    currentCycle: 0,
+    cycles: newPlan.tasks.map((task) => CycleRecord({ task }, { work: { time: 5000 }, shortPause: { time: 2000 }, longPause: { time: 3000 } })),
+  }))
 }
 
-const changeTaskText = ({ cycle, setCycle }) => (text) => {
-  const updatedCycle = cycle.merge({
-    task: text
-  })
-  setCycle(updatedCycle)
+const getCurrentCycle = ({ data }) => () => {
+  return data
+    .get('cycles')
+    .get(data.get('currentCycle'))
+}
+
+const getCurrentStep = (props) => () => {
+  const currentCycle = getCurrentCycle(props)()
+  return currentCycle.steps.get(currentCycle.currentStep)
+}
+
+const stepTo = ({ data, setData }) => (nextStep) => () => {
+  setData((data) => data.merge({
+    currentCycle:
+      nextStep > data.get('cycles').get(data.get('currentCycle')).steps.size
+      ? data.get('currentCycle') + 1
+      : data.get('currentCycle')
+    ,
+    cycles: data.get('cycles').update(
+      data.get('currentCycle'),
+      (cycle) => cycle.merge({
+        currentStep: nextStep,
+        steps: cycle.steps.update(
+          cycle.currentStep,
+          (step) => step.merge({ done: true }),
+        ),
+      }),
+    ),
+  }))
 }
 
 export default compose(
   withState(...initialState),
-  withHandlers({ stepTo, changeTaskText }),
+  withHandlers({ createCycles, stepTo, getCurrentCycle, getCurrentStep }),
 )(App)
