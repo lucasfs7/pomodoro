@@ -1,53 +1,48 @@
 import React from 'react'
 import { compose, withState, withHandlers } from 'recompose'
-import { Map, List } from 'immutable'
 import PlanRecord from 'records/PlanRecord'
 import CycleRecord from 'records/CycleRecord'
 import Timer from 'components/Timer'
 import Plan from 'components/Plan'
 import './App.css'
 
-const App = ({ data, createCycles, stepTo, getCurrentStep, getCurrentCycle }) => (
+const App = ({ plan, createCycles, stepTo, getCurrentStep, getCurrentCycle }) => (
   <div className='App'>
-    { data.get('plan').planned &&
-      data.get('cycles').size > 0 &&
-      !data.get('finished') &&
+    { plan.planned &&
+      plan.get('cycles').size > 0 &&
+      !plan.get('finished') &&
       <Timer
         time={ getCurrentStep().time }
         onFinish={ stepTo(getCurrentCycle().currentStep + 1) } />
     }
-    { data.get('finished') &&
+    { plan.get('finished') &&
       <h1>Congratulations, everything is done!</h1>
     }
     <Plan
-      plan={ data.get('plan') }
+      plan={ plan }
       onFinish={ createCycles } />
   </div>
 )
 
 const initialState = [
-  'data',
-  'setData',
-  Map({
-    plan: PlanRecord(),
-    cycles: List(),
-    currentCycle: null,
-    finished: false,
-  }),
+  'plan',
+  'setPlan',
+  PlanRecord(),
 ]
 
-const createCycles = ({ setData }) => (newPlan) => {
-  setData((data) => data.merge({
-    plan: newPlan,
+const createCycles = ({ setPlan }) => (draft) => {
+  setPlan((plan) => plan.merge({
+    draft,
+    planned: true,
     currentCycle: 0,
-    cycles: newPlan.tasks.map((task) => CycleRecord({ task }, { work: { time: 5000 }, shortPause: { time: 2000 }, longPause: { time: 3000 } })),
+    cycles: draft.map((task) => CycleRecord({ task }, { work: { time: 5000 }, shortPause: { time: 2000 }, longPause: { time: 3000 } })),
   }))
 }
 
-const getCurrentCycle = ({ data }) => () => {
-  return data
+const getCurrentCycle = ({ plan }) => () => {
+  return plan
     .get('cycles')
-    .get(data.get('currentCycle'))
+    .get(plan.get('currentCycle'))
 }
 
 const getCurrentStep = (props) => () => {
@@ -55,21 +50,21 @@ const getCurrentStep = (props) => () => {
   return currentCycle.steps.get(currentCycle.currentStep)
 }
 
-const stepTo = ({ setData }) => (nextStep) => () => {
-  setData((data) => data.merge({
+const stepTo = ({ setPlan }) => (nextStep) => () => {
+  setPlan((plan) => plan.merge({
     currentCycle: (
-      nextStep === data.get('cycles').get(data.get('currentCycle')).steps.size
-      ? (data.get('currentCycle') + 1) < data.get('cycles').size
-        ? data.get('currentCycle') + 1
-        : data.get('currentCycle')
-      : data.get('currentCycle')
+      nextStep === plan.get('cycles').get(plan.get('currentCycle')).steps.size
+      ? (plan.get('currentCycle') + 1) < plan.get('cycles').size
+        ? plan.get('currentCycle') + 1
+        : plan.get('currentCycle')
+      : plan.get('currentCycle')
     ),
     finished: (
-      nextStep === data.get('cycles').get(data.get('currentCycle')).steps.size &&
-      (data.get('currentCycle') + 1) === data.get('cycles').size
+      nextStep === plan.get('cycles').get(plan.get('currentCycle')).steps.size &&
+      (plan.get('currentCycle') + 1) === plan.get('cycles').size
     ),
-    cycles: data.get('cycles').update(
-      data.get('currentCycle'),
+    cycles: plan.get('cycles').update(
+      plan.get('currentCycle'),
       (cycle) => cycle.merge({
         currentStep: nextStep,
         steps: cycle.steps.update(

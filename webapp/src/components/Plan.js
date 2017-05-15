@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { compose, withState, withHandlers } from 'recompose'
+import { compose, withState, withHandlers, lifecycle } from 'recompose'
 import { Map } from 'immutable'
 import { PlanRecord } from 'records/PlanRecord'
 
@@ -22,14 +22,14 @@ const Plan = ({ state, addTask, finishPlan, onTextChange }) => (
           placeholder='...'
           onKeyPress={ addTask } />
         <button
-          disabled={ state.get('plan').tasks.size === 0 }
+          disabled={ state.get('plan').draft.size === 0 }
           onClick={ finishPlan }>
           Ready to go?
         </button>
       </div>
     }
     <ul>
-      { state.get('plan').tasks.map((task, index) => (
+      { state.get('plan').draft.map((task, index) => (
         <li key={ index }>{ task }</li>
       )) }
     </ul>
@@ -57,18 +57,14 @@ const addTask = ({ setState }) => (e) => {
   setState((state) => state.merge({
     text: '',
     plan: state.get('plan').merge({
-      tasks: state.get('plan').tasks.push([ text ]),
+      draft: state.get('plan').draft.push([ text ]),
     }),
   }))
 }
 
 const finishPlan = ({ state, setState, onFinish }) => () => {
-  if (state.get('plan').tasks.size === 0) return
-  const updatedPlan = state.get('plan').merge({ planned: true })
-  setState((state) => state.merge({
-    plan: updatedPlan,
-  }))
-  if (onFinish) onFinish(updatedPlan)
+  if (state.get('plan').draft.size === 0) return
+  if (onFinish) onFinish(state.get('plan').draft)
 }
 
 const onTextChange = ({ setState }) => (e) => {
@@ -78,7 +74,16 @@ const onTextChange = ({ setState }) => (e) => {
   }))
 }
 
+const lifecycleHandler = {
+  componentWillReceiveProps({ plan, setState }) {
+    if (plan !== this.props.plan) {
+      setState((state) => state.merge({ plan }))
+    }
+  },
+}
+
 export default compose(
   withState(...initialState),
   withHandlers({ addTask, finishPlan, onTextChange }),
+  lifecycle(lifecycleHandler),
 )(Plan)
