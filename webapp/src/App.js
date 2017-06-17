@@ -17,7 +17,9 @@ const App = ({ plan, createCycles, stepTo, getCurrentStep, getCurrentCycle }) =>
         onFinish={ stepTo(getCurrentCycle().currentStep + 1) } />
     }
     { plan.get('finished') &&
-      <h1>Congratulations, everything is done!</h1>
+      <h1 className={ styles.finishedMessage }>
+        Congratulations, everything is done!
+      </h1>
     }
     <Plan
       plan={ plan }

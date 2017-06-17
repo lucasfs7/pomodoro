@@ -15,3 +15,10 @@ export const app = css({
   maxWidth: '320px',
   margin: '0 auto',
 })
+
+export const finishedMessage = css({
+  fontSize: '30px',
+  margin: '0 20px',
+  padding: '40px 0',
+  textAlign: 'center',
+})
