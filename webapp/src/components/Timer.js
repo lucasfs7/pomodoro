@@ -3,20 +3,28 @@ import PropTypes from 'prop-types'
 import { compose, withState, withHandlers, lifecycle } from 'recompose'
 import { time as T, fullTime } from 'utils/time'
 import { Map } from 'immutable'
+import * as styles from 'components/Timer.css'
 
 const Timer = ({ timer, startTimer, pauseTimer, stopTimer }) => (
-  <div className='Timer'>
-    <h1>{ fullTime(timer.get('remaining')) }</h1>
+  <div className={ styles.timer }>
+    <h1 className={ styles.clock }>
+      { fullTime(timer.get('remaining')) }
+    </h1>
     <button
+      className={ styles.controlButton }
       onClick={ startTimer(timer.get('remaining')) }
       disabled={ !!timer.get('timeoutPID') }>
-      Start
+      &#9654;
     </button>
-    <button onClick={ pauseTimer }>
-      Pause
+    <button
+      className={ styles.controlButton }
+      onClick={ pauseTimer }>
+      &#9646;&#9646;
     </button>
-    <button onClick={ stopTimer }>
-      Stop
+    <button
+      className={ styles.controlButton }
+      onClick={ stopTimer }>
+      &#9724;
     </button>
   </div>
 )
