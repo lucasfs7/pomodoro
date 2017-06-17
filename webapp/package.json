@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "glamor": "^2.20.25",
     "immutable": "^3.8.1",
     "notifyjs": "^3.0.0",
     "react": "^15.5.4",
