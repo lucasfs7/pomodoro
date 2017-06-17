@@ -29,15 +29,29 @@ const Plan = ({ state, addTask, finishPlan, onTextChange }) => (
       </div>
     }
     <ul>
-      { state.get('plan').draft.map((task, index) => (
-        <li key={ index }>
-          { task }
-          { !state.get('plan').cycles.isEmpty() &&
-            state.get('plan').cycles.get(index).finished &&
-            <span>&#10004;</span>
-          }
-        </li>
-      )) }
+      { !state.get('plan').planned &&
+        state.get('plan').draft.map((task, index) => (
+          <li key={ index }>{ task }</li>
+        ))
+      }
+      { state.get('plan').planned &&
+        state.get('plan').cycles
+        .sort((a, b) => (
+          a.finished && b.finished
+          ? 0
+          : a.finished
+            ? 1
+            : -1
+        ))
+        .map((cycle, index) => (
+          <li key={ index }>
+            { cycle.task }
+            { cycle.finished &&
+              <span>&#10004;</span>
+            }
+          </li>
+        ))
+      }
     </ul>
   </div>
 )
