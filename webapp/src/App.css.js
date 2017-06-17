@@ -22,3 +22,15 @@ export const finishedMessage = css({
   padding: '40px 0',
   textAlign: 'center',
 })
+
+export const restartButton = css({
+  background: '#DF3B57',
+  border: '0',
+  color: '#FFFFFF',
+  fontSize: '20px',
+  fontWeight: 'bold',
+  height: '60px',
+  margin: '0 20px 20px 20px',
+  textTransform: 'uppercase',
+  width: 'calc(100% - 40px)',
+})

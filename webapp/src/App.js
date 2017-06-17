@@ -10,7 +10,7 @@ import notify from 'utils/notify'
 import keymap from 'utils/keymap'
 import * as styles from 'App.css'
 
-const App = ({ plan, createCycles, stepTo, getCurrentStep, getCurrentCycle }) => (
+const App = ({ plan, createCycles, stepTo, getCurrentStep, getCurrentCycle, resetPlan }) => (
   <div className={ styles.app }>
     { plan.planned &&
       plan.get('cycles').size > 0 &&
@@ -20,9 +20,16 @@ const App = ({ plan, createCycles, stepTo, getCurrentStep, getCurrentCycle }) =>
         onFinish={ stepTo(getCurrentCycle().currentStep + 1) } />
     }
     { plan.get('finished') &&
-      <h1 className={ styles.finishedMessage }>
-        Congratulations, everything is done!
-      </h1>
+      <div>
+        <h1 className={ styles.finishedMessage }>
+          Congratulations, everything is done!
+        </h1>
+        <button
+          className={ styles.restartButton }
+          onClick={ resetPlan }>
+          New plan
+        </button>
+      </div>
     }
     <Plan
       plan={ plan }
@@ -84,6 +91,10 @@ const stepTo = ({ setPlan }) => (nextStep) => () => {
   }))
 }
 
+const resetPlan = ({ setPlan }) => () => {
+  setPlan(PlanRecord())
+}
+
 const context = [
   {
     shortcuts: PropTypes.object.isRequired,
@@ -96,5 +107,5 @@ const context = [
 export default compose(
   withContext(...context),
   withState(...initialState),
-  withHandlers({ createCycles, stepTo, getCurrentCycle, getCurrentStep }),
+  withHandlers({ createCycles, stepTo, getCurrentCycle, getCurrentStep, resetPlan }),
 )(App)
