@@ -67,6 +67,7 @@ const stepTo = ({ setPlan }) => (nextStep) => () => {
       plan.get('currentCycle'),
       (cycle) => cycle.merge({
         currentStep: nextStep,
+        finished: nextStep === cycle.steps.size,
         steps: cycle.steps.update(
           cycle.currentStep,
           (step) => step.merge({ done: true }),
