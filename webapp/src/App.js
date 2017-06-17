@@ -4,6 +4,7 @@ import PlanRecord from 'records/PlanRecord'
 import CycleRecord from 'records/CycleRecord'
 import Timer from 'components/Timer'
 import Plan from 'components/Plan'
+import notify from 'utils/notify'
 import './App.css'
 
 const App = ({ plan, createCycles, stepTo, getCurrentStep, getCurrentCycle }) => (
@@ -51,6 +52,7 @@ const getCurrentStep = (props) => () => {
 }
 
 const stepTo = ({ setPlan }) => (nextStep) => () => {
+  notify()
   setPlan((plan) => plan.merge({
     currentCycle: (
       nextStep === plan.get('cycles').get(plan.get('currentCycle')).steps.size
