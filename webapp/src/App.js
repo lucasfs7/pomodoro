@@ -5,10 +5,10 @@ import CycleRecord from 'records/CycleRecord'
 import Timer from 'components/Timer'
 import Plan from 'components/Plan'
 import notify from 'utils/notify'
-import 'App.css'
+import * as styles from 'App.css'
 
 const App = ({ plan, createCycles, stepTo, getCurrentStep, getCurrentCycle }) => (
-  <div>
+  <div className={ styles.app }>
     { plan.planned &&
       plan.get('cycles').size > 0 &&
       !plan.get('finished') &&

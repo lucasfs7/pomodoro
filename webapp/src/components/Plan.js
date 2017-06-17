@@ -3,48 +3,37 @@ import PropTypes from 'prop-types'
 import { compose, withState, withHandlers, lifecycle } from 'recompose'
 import { Map } from 'immutable'
 import { PlanRecord } from 'records/PlanRecord'
+import * as styles from 'components/Plan.css'
 
 const Plan = ({ state, addTask, finishPlan, onTextChange }) => (
   <div>
-    { state.get('plan').planned ? (
-      <h1>The plan...</h1>
-    ) : (
-      <h1>What do you want to accomplish today?</h1>
-    ) }
     { !state.get('plan').planned &&
-      <div>
-        <input
-          autoFocus
-          spellCheck={ false }
-          value={ state.get('text') }
-          onChange={ onTextChange }
-          type='text'
-          placeholder='...'
-          onKeyPress={ addTask } />
-        <button
-          disabled={ state.get('plan').draft.size === 0 }
-          onClick={ finishPlan }>
-          Ready to go?
-        </button>
-      </div>
+      <input
+        className={ styles.taskInput }
+        autoFocus
+        tabIndex='1'
+        spellCheck={ false }
+        value={ state.get('text') }
+        onChange={ onTextChange }
+        type='text'
+        placeholder='What will you accomplish?'
+        onKeyPress={ addTask } />
     }
-    <ul>
+    <ul className={ styles.tasks }>
       { !state.get('plan').planned &&
         state.get('plan').draft.map((task, index) => (
-          <li key={ index }>{ task }</li>
+          <li
+            key={ index }
+            className={ styles.task }>
+            { task }
+          </li>
         ))
       }
       { state.get('plan').planned &&
         state.get('plan').cycles
-        .sort((a, b) => (
-          a.finished && b.finished
-          ? 0
-          : a.finished
-            ? 1
-            : -1
-        ))
+        .sort((a, b) =>  a.finished && b.finished ? 0 : a.finished ? 1 : -1)
         .map((cycle, index) => (
-          <li key={ index }>
+          <li key={ index } className={ styles.task }>
             { cycle.task }
             { cycle.finished &&
               <span>&#10004;</span>
@@ -53,6 +42,15 @@ const Plan = ({ state, addTask, finishPlan, onTextChange }) => (
         ))
       }
     </ul>
+    { !state.get('plan').planned &&
+      <button
+        className={ styles.startButton }
+        tabIndex='2'
+        disabled={ state.get('plan').draft.size === 0 }
+        onClick={ finishPlan }>
+        Start!
+      </button>
+    }
   </div>
 )
 
