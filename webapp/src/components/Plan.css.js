@@ -23,12 +23,10 @@ export const task = css({
   padding: '0',
 })
 
-export const plannedTask = css({
-  ...task,
+export const plannedTask = css(task, {
 })
 
-export const finishedTask = css({
-  ...plannedTask,
+export const finishedTask = css(plannedTask, {
   textDecoration: 'line-through',
 })
 
