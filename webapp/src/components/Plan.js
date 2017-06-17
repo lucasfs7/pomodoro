@@ -33,7 +33,11 @@ const Plan = ({ state, addTask, finishPlan, onTextChange }) => (
         state.get('plan').cycles
         .sort((a, b) =>  a.finished && b.finished ? 0 : a.finished ? 1 : -1)
         .map((cycle, index) => (
-          <li key={ index } className={ styles.task }>
+          <li
+            key={ index }
+            className={
+              cycle.finished ? styles.finishedTask : styles.plannedTask
+            }>
             { cycle.task }
             { cycle.finished &&
               <span>&#10004;</span>

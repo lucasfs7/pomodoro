@@ -23,6 +23,15 @@ export const task = css({
   padding: '0',
 })
 
+export const plannedTask = css({
+  ...task,
+})
+
+export const finishedTask = css({
+  ...plannedTask,
+  textDecoration: 'line-through',
+})
+
 export const startButton = css({
   background: '#DF3B57',
   border: '0',
