@@ -33,4 +33,7 @@ export const startButton = css({
   margin: '40px 20px 0 20px',
   textTransform: 'uppercase',
   width: '100%',
+  '&[disabled]': {
+    opacity: '.7',
+  },
 })
