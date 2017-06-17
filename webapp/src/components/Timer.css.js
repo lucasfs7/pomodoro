@@ -3,6 +3,9 @@ import { css } from 'glamor'
 export const timer = css({
   padding: '40px 0',
   textAlign: 'center',
+  '& shortcuts': {
+    outline: 'none',
+  },
 })
 
 export const clock = css({

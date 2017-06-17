@@ -3,29 +3,35 @@ import PropTypes from 'prop-types'
 import { compose, withState, withHandlers, lifecycle } from 'recompose'
 import { time as T, fullTime } from 'utils/time'
 import { Map } from 'immutable'
+import { Shortcuts } from 'react-shortcuts'
 import * as styles from 'components/Timer.css'
 
-const Timer = ({ timer, startTimer, pauseTimer, stopTimer }) => (
+const Timer = ({ timer, startTimer, pauseTimer, stopTimer, handleShortcuts }) => (
   <div className={ styles.timer }>
-    <h1 className={ styles.clock }>
-      { fullTime(timer.get('remaining')) }
-    </h1>
-    <button
-      className={ styles.controlButton }
-      onClick={ startTimer(timer.get('remaining')) }
-      disabled={ !!timer.get('timeoutPID') }>
-      &#9654;
-    </button>
-    <button
-      className={ styles.controlButton }
-      onClick={ pauseTimer }>
-      &#9646;&#9646;
-    </button>
-    <button
-      className={ styles.controlButton }
-      onClick={ stopTimer }>
-      &#9724;
-    </button>
+    <Shortcuts
+      name='Timer'
+      targetNodeSelector='body'
+      handler={ handleShortcuts }>
+      <h1 className={ styles.clock }>
+        { fullTime(timer.get('remaining')) }
+      </h1>
+      <button
+        className={ styles.controlButton }
+        onClick={ startTimer(timer.get('remaining')) }
+        disabled={ !!timer.get('timeoutPID') }>
+        &#9654;
+      </button>
+      <button
+        className={ styles.controlButton }
+        onClick={ pauseTimer }>
+        &#9646;&#9646;
+      </button>
+      <button
+        className={ styles.controlButton }
+        onClick={ stopTimer }>
+        &#9724;
+      </button>
+    </Shortcuts>
   </div>
 )
 
@@ -77,8 +83,24 @@ const stopTimer = ({ time, timer, setTimer }) => () => {
   setTimer(timer.merge({ remaining: time, timeoutPID: null }))
 }
 
+const handleShortcuts = (props) => (action) => {
+  switch (action) {
+    case 'TOGGLE_PLAY':
+      if (!props.timer.get('timeoutPID')) {
+        startTimer(props)(props.timer.get('remaining'))()
+      } else {
+        pauseTimer(props)()
+      }
+      break
+    case 'STOP':
+      stopTimer(props)()
+      break
+    default:
+  }
+}
+
 export default compose(
   withState(...initialState),
-  withHandlers({ startTimer, pauseTimer, stopTimer }),
+  withHandlers({ startTimer, pauseTimer, stopTimer, handleShortcuts}),
   lifecycle(lifecycleMethods),
 )(Timer)

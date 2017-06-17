@@ -1,10 +1,13 @@
 import React from 'react'
-import { compose, withState, withHandlers } from 'recompose'
+import PropTypes from 'prop-types'
+import { compose, withState, withHandlers, withContext } from 'recompose'
+import { ShortcutManager } from 'react-shortcuts'
 import PlanRecord from 'records/PlanRecord'
 import CycleRecord from 'records/CycleRecord'
 import Timer from 'components/Timer'
 import Plan from 'components/Plan'
 import notify from 'utils/notify'
+import keymap from 'utils/keymap'
 import * as styles from 'App.css'
 
 const App = ({ plan, createCycles, stepTo, getCurrentStep, getCurrentCycle }) => (
@@ -81,7 +84,17 @@ const stepTo = ({ setPlan }) => (nextStep) => () => {
   }))
 }
 
+const context = [
+  {
+    shortcuts: PropTypes.object.isRequired,
+  },
+  () => ({
+    shortcuts: new ShortcutManager(keymap),
+  }),
+]
+
 export default compose(
+  withContext(...context),
   withState(...initialState),
   withHandlers({ createCycles, stepTo, getCurrentCycle, getCurrentStep }),
 )(App)
