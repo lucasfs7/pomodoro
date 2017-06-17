@@ -32,7 +32,7 @@ export const startButton = css({
   height: '60px',
   margin: '40px 20px 0 20px',
   textTransform: 'uppercase',
-  width: '100%',
+  width: 'calc(100% - 40px)',
   '&[disabled]': {
     opacity: '.7',
   },
