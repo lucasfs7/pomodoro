@@ -30,7 +30,13 @@ const Plan = ({ state, addTask, finishPlan, onTextChange }) => (
     }
     <ul>
       { state.get('plan').draft.map((task, index) => (
-        <li key={ index }>{ task }</li>
+        <li key={ index }>
+          { task }
+          { !state.get('plan').cycles.isEmpty() &&
+            state.get('plan').cycles.get(index).finished &&
+            <span>&#10004;</span>
+          }
+        </li>
       )) }
     </ul>
   </div>
